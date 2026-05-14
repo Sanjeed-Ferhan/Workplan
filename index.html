@@ -215,15 +215,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:1
 .tl-body::-webkit-scrollbar{width:4px}
 .tl-body::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
 
-/* ── LB Completed ────────────────────────────────────────────── */
-.lb-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:8px}
-.lb-item{
-  display:flex;align-items:center;gap:8px;
-  padding:9px 12px;border-radius:8px;
-  background:var(--green-bg);border:1px solid var(--green-border);
-  font-size:12px;font-weight:500;color:#065f46;
-}
-.lb-item::before{content:"✓";font-weight:800;color:var(--green);flex-shrink:0}
+
 
 /* ── Pipeline ────────────────────────────────────────────────── */
 .pipe-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:22px}
@@ -310,7 +302,6 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:1
     <div class="strip-stat"><div class="num">24</div><div class="lbl">Completed</div></div>
     <div class="strip-stat"><div class="num">222</div><div class="lbl">Pending</div></div>
     <div class="strip-stat"><div class="num">9.8%</div><div class="lbl">Completion Rate</div></div>
-    <div class="strip-stat"><div class="num">24</div><div class="lbl">LB Done</div></div>
   </div>
 </div>
 
@@ -345,15 +336,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:1
       <div class="progress-track"><div class="progress-fill" style="width:90.2%;background:#d97706"></div></div>
     </div>
   </div>
-  <div class="kpi" style="--kc:#7c3aed">
-    <div class="kpi-icon">⚖️</div>
-    <div class="kpi-label">Line Balancing Done</div>
-    <div class="kpi-value">24</div>
-    <div class="kpi-sub">Of capacity-studied SKUs</div>
-    <div class="progress-wrap">
-      <div class="progress-track"><div class="progress-fill" style="width:100%;background:#7c3aed"></div></div>
-    </div>
-  </div>
+
   <div class="kpi" style="--kc:#0891b2">
     <div class="kpi-icon">📅</div>
     <div class="kpi-label">3-Month Pipeline</div>
@@ -402,12 +385,6 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:1
           <span class="legend-label">Pending</span>
           <span class="legend-val">222</span>
           <span class="legend-pct">90.2%</span>
-        </div>
-        <div class="legend-item" style="margin-top:6px;padding-top:8px;border-top:1px solid var(--border)">
-          <div class="legend-dot" style="background:#7c3aed"></div>
-          <span class="legend-label">Line Balancing Done</span>
-          <span class="legend-val">24</span>
-          <span class="legend-pct">100%</span>
         </div>
       </div>
     </div>
@@ -518,11 +495,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:1
   </div>
 </div>
 
-<!-- ── Line Balancing Completed ── -->
-<div class="section-label">Line Balancing — Completed SKUs (24)</div>
-<div class="card card-p" style="margin-bottom:22px">
-  <div class="lb-grid" id="lbGrid"></div>
-</div>
+
 
 <!-- ── Footer ── -->
 <div class="footer">
@@ -603,15 +576,7 @@ fillList('mayList',  DATA.may_skus,  'var(--may)');
 fillList('juneList', DATA.june_skus, 'var(--purple)');
 fillList('julyList', DATA.july_skus, 'var(--july)');
 
-// ── LB Grid ──
-const lbGrid = document.getElementById('lbGrid');
-DATA.lb_done_list.forEach(item => {
-  const div = document.createElement('div');
-  div.className = 'lb-item';
-  div.textContent = item.replace('ENOVAR ','');
-  div.title = item;
-  lbGrid.appendChild(div);
-});
+
 </script>
 </body>
 </html>
