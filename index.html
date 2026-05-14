@@ -3,144 +3,615 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Production Dashboard</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<title>ALEL Capacity Study — Management Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
+/* ── Reset & Base ────────────────────────────────────────────── */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-
 :root{
-  --navy:#0f1c35;
-  --navy2:#172340;
-  --navy3:#1d2d50;
-  --blue:#2a6fdb;
-  --blue2:#3b82f6;
-  --cyan:#06b6d4;
-  --green:#22c55e;
-  --green2:#16a34a;
-  --amber:#f59e0b;
-  --red:#ef4444;
-  --bg:#f0f4fa;
-  --surface:#ffffff;
-  --surface2:#f7f9fd;
-  --border:#dde4f0;
-  --text:#0f1c35;
-  --muted:#64748b;
-  --shadow:0 1px 3px rgba(15,28,53,.08),0 4px 16px rgba(15,28,53,.06);
-  --shadow-lg:0 4px 24px rgba(15,28,53,.12);
+  --bg:#f0f2f5;
+  --white:#ffffff;
+  --card:#ffffff;
+  --border:#e4e7ed;
+  --border2:#d1d5db;
+  --text:#0f172a;
+  --text2:#475569;
+  --text3:#94a3b8;
+  --green:#059669;
+  --green-bg:#ecfdf5;
+  --green-border:#a7f3d0;
+  --amber:#d97706;
+  --amber-bg:#fffbeb;
+  --amber-border:#fde68a;
+  --red:#dc2626;
+  --red-bg:#fef2f2;
+  --red-border:#fecaca;
+  --blue:#2563eb;
+  --blue-bg:#eff6ff;
+  --blue-border:#bfdbfe;
+  --purple:#7c3aed;
+  --purple-bg:#f5f3ff;
+  --purple-border:#ddd6fe;
+  --may:#0891b2;
+  --may-bg:#ecfeff;
+  --june:#7c3aed;
+  --june-bg:#f5f3ff;
+  --july:#ea580c;
+  --july-bg:#fff7ed;
+  --shadow-sm:0 1px 3px rgba(0,0,0,.08),0 1px 2px rgba(0,0,0,.05);
+  --shadow:0 4px 16px rgba(0,0,0,.07),0 2px 4px rgba(0,0,0,.05);
+  --shadow-lg:0 10px 40px rgba(0,0,0,.1),0 4px 8px rgba(0,0,0,.06);
+  --radius:12px;
+  --radius-sm:8px;
+  --mono:'JetBrains Mono',monospace;
+  --sans:'Inter',sans-serif;
+}
+html{font-size:15px}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;-webkit-font-smoothing:antialiased}
+
+/* ── Print ── */
+@media print{
+  body{background:#fff}
+  .no-print{display:none!important}
+  .card{box-shadow:none;border:1px solid #ddd}
+  .page-wrap{max-width:100%;padding:0}
 }
 
-html{scroll-behavior:smooth}
-body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+/* ── Layout ─────────────────────────────────────────────────── */
+.page-wrap{max-width:1280px;margin:0 auto;padding:24px 24px 60px}
 
-/* ── TOPBAR ── */
+/* ── Top bar ─────────────────────────────────────────────────── */
 .topbar{
-  background:var(--navy);
-  padding:0 24px;
-  height:54px;
-  display:flex;align-items:center;gap:12px;
-  position:sticky;top:0;z-index:200;
-}
-.logo-mark{
-  width:32px;height:32px;border-radius:8px;
-  background:linear-gradient(135deg,var(--blue) 0%,var(--cyan) 100%);
-  display:grid;place-items:center;flex-shrink:0;
-}
-.logo-mark svg{width:16px;height:16px;fill:white}
-.app-title{font-family:'Syne',sans-serif;font-size:1.15rem;font-weight:800;color:#fff;letter-spacing:.02em}
-.app-title span{color:var(--cyan)}
-.topbar-right{margin-left:auto;display:flex;align-items:center;gap:10px}
-.status-dot{
-  width:8px;height:8px;border-radius:50%;background:var(--green);
-  box-shadow:0 0 0 3px rgba(34,197,94,.25);
-  animation:pulse 2s ease-in-out infinite;
-}
-@keyframes pulse{0%,100%{box-shadow:0 0 0 3px rgba(34,197,94,.25)}50%{box-shadow:0 0 0 6px rgba(34,197,94,.1)}}
-.status-text{font-size:.75rem;color:#94a3b8}
-#last-updated{font-size:.72rem;color:#64748b;background:rgba(255,255,255,.06);padding:3px 10px;border-radius:20px;border:1px solid rgba(255,255,255,.1)}
-
-/* ── FILTERS BAR ── */
-.filters{
-  background:var(--surface);
-  border-bottom:1px solid var(--border);
-  padding:14px 24px;
-  display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;
-  box-shadow:0 2px 8px rgba(15,28,53,.05);
-}
-.fg{display:flex;flex-direction:column;gap:4px}
-.fg label{font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--muted)}
-.fg select,.fg input[type=date]{
-  padding:7px 10px;
-  border:1.5px solid var(--border);
-  border-radius:7px;
-  font-family:'DM Sans',sans-serif;
-  font-size:.875rem;
-  color:var(--text);
-  background:var(--surface2);
-  min-width:130px;
-  cursor:pointer;
-  transition:border-color .15s,box-shadow .15s;
-  appearance:auto;
-}
-.fg select:focus,.fg input[type=date]:focus{outline:none;border-color:var(--blue2);box-shadow:0 0 0 3px rgba(59,130,246,.12)}
-.filter-btns{display:flex;gap:8px;margin-left:auto}
-.btn{
-  padding:8px 16px;border:none;border-radius:7px;
-  font-family:'DM Sans',sans-serif;font-weight:600;font-size:.85rem;
-  cursor:pointer;display:flex;align-items:center;gap:6px;
-  transition:filter .15s,transform .1s;
-}
-.btn:hover{filter:brightness(1.1);transform:translateY(-1px)}
-.btn:active{transform:translateY(0)}
-.btn-reset{background:#e2e8f0;color:#475569}
-.btn-refresh{background:var(--blue);color:#fff}
-.btn-excel{background:var(--green2);color:#fff}
-.btn svg{width:14px;height:14px;fill:currentColor}
-
-/* ── KPI STRIP ── */
-.kpi-strip{
-  display:grid;
-  grid-template-columns:repeat(6,1fr);
-  gap:1px;background:var(--border);
-  margin:20px 24px;
-  border-radius:12px;overflow:hidden;
-  box-shadow:var(--shadow);
-}
-.kpi{
-  background:var(--surface);
-  padding:18px 16px;
-  display:flex;flex-direction:column;gap:5px;
-  transition:background .15s;
-}
-.kpi:hover{background:#f0f6ff}
-.kpi-label{font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--muted)}
-.kpi-val{font-family:'Syne',sans-serif;font-size:1.8rem;font-weight:800;color:var(--blue);line-height:1}
-.kpi-sub{font-size:.7rem;color:var(--muted);margin-top:2px}
-
-/* loading shimmer */
-.shimmer{
-  background:linear-gradient(90deg,#f0f4fa 25%,#e2e8f0 50%,#f0f4fa 75%);
-  background-size:200% 100%;
-  animation:shimmer 1.4s infinite;
-  border-radius:6px;height:32px;width:70%;
-}
-@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
-
-/* ── TABLE ── */
-.table-section{margin:0 24px 32px}
-.table-card{
-  background:var(--surface);
-  border-radius:12px;
-  overflow:hidden;
-  box-shadow:var(--shadow);
+  background:var(--white);
   border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:20px 28px;
+  margin-bottom:22px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  flex-wrap:wrap;
+  gap:12px;
+  box-shadow:var(--shadow-sm);
 }
-.table-header{
-  padding:14px 18px;
+.topbar-left{display:flex;flex-direction:column;gap:4px}
+.company-tag{
+  font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--blue);font-family:var(--mono);
+  display:flex;align-items:center;gap:6px;
+}
+.company-tag::before{content:'';width:7px;height:7px;border-radius:50%;background:var(--green);animation:blink 2s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+.dash-title{font-size:22px;font-weight:800;color:var(--text);letter-spacing:-.02em;line-height:1.1}
+.dash-title span{color:var(--blue)}
+.dash-sub{font-size:12px;color:var(--text3);font-family:var(--mono);margin-top:2px}
+.topbar-right{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.date-chip{
+  background:var(--blue-bg);border:1px solid var(--blue-border);
+  color:var(--blue);font-size:11.5px;font-weight:600;font-family:var(--mono);
+  padding:6px 14px;border-radius:20px;
+}
+.print-btn{
+  background:var(--blue);color:#fff;border:none;cursor:pointer;
+  font-family:var(--sans);font-size:12px;font-weight:600;
+  padding:8px 18px;border-radius:8px;display:flex;align-items:center;gap:6px;
+  transition:opacity .15s;
+}
+.print-btn:hover{opacity:.85}
+
+/* ── Section label ───────────────────────────────────────────── */
+.section-label{
+  font-size:10.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--text3);margin-bottom:12px;
+  display:flex;align-items:center;gap:8px;
+}
+.section-label::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* ── Cards ───────────────────────────────────────────────────── */
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow)}
+.card-p{padding:20px 22px}
+
+/* ── KPI Row ─────────────────────────────────────────────────── */
+.kpi-row{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:22px}
+@media(max-width:900px){.kpi-row{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:580px){.kpi-row{grid-template-columns:repeat(2,1fr)}}
+
+.kpi{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--radius);padding:18px 20px;
+  position:relative;overflow:hidden;box-shadow:var(--shadow-sm);
+  transition:transform .15s,box-shadow .15s;
+}
+.kpi:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--kc,var(--blue))}
+.kpi-icon{font-size:22px;margin-bottom:10px;line-height:1}
+.kpi-label{font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:6px}
+.kpi-value{font-size:32px;font-weight:800;letter-spacing:-.02em;line-height:1;color:var(--kc,var(--blue))}
+.kpi-sub{font-size:11.5px;color:var(--text3);margin-top:4px;font-family:var(--mono)}
+
+/* ── Progress bar ────────────────────────────────────────────── */
+.progress-wrap{margin-top:10px}
+.progress-track{height:6px;background:#e5e7eb;border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;border-radius:3px;background:var(--kc,var(--blue));transition:width .6s ease}
+.progress-labels{display:flex;justify-content:space-between;margin-top:4px}
+.progress-labels span{font-size:10px;color:var(--text3);font-family:var(--mono)}
+
+/* ── Grid layouts ────────────────────────────────────────────── */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:22px}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:22px}
+.grid-left-wide{display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:22px}
+.grid-right-wide{display:grid;grid-template-columns:1fr 2fr;gap:16px;margin-bottom:22px}
+@media(max-width:800px){.grid-2,.grid-3,.grid-left-wide,.grid-right-wide{grid-template-columns:1fr}}
+
+/* ── Donut chart ─────────────────────────────────────────────── */
+.donut-wrap{display:flex;flex-direction:column;align-items:center;padding:16px 0 8px}
+.donut-svg{width:160px;height:160px;position:relative}
+.donut-center{
+  position:absolute;inset:0;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:2px;
+}
+.donut-center-num{font-size:26px;font-weight:800;letter-spacing:-.02em;color:var(--text)}
+.donut-center-sub{font-size:10.5px;color:var(--text3);font-weight:600;letter-spacing:.05em;text-transform:uppercase}
+.donut-legend{display:flex;flex-direction:column;gap:8px;width:100%;padding:0 8px;margin-top:12px}
+.legend-item{display:flex;align-items:center;gap:8px;font-size:12px}
+.legend-dot{width:10px;height:10px;border-radius:3px;flex-shrink:0}
+.legend-label{flex:1;color:var(--text2);font-weight:500}
+.legend-val{font-family:var(--mono);font-size:11.5px;font-weight:700;color:var(--text)}
+.legend-pct{font-family:var(--mono);font-size:10.5px;color:var(--text3);min-width:36px;text-align:right}
+
+/* ── Month bars ──────────────────────────────────────────────── */
+.month-bars{display:flex;flex-direction:column;gap:14px}
+.mbar-row{display:flex;align-items:center;gap:10px}
+.mbar-label{font-size:12.5px;font-weight:700;min-width:44px;color:var(--text)}
+.mbar-track{flex:1;height:20px;background:#f1f5f9;border-radius:5px;overflow:hidden;position:relative}
+.mbar-fill{height:100%;border-radius:5px;display:flex;align-items:center;padding-left:8px;
+  font-size:11px;font-weight:700;color:#fff;font-family:var(--mono);min-width:28px;
+  transition:width .7s ease}
+.mbar-val{font-family:var(--mono);font-size:12px;font-weight:700;min-width:32px;color:var(--text)}
+.mbar-pct{font-family:var(--mono);font-size:10.5px;color:var(--text3);min-width:36px;text-align:right}
+
+/* ── Category table ──────────────────────────────────────────── */
+.cat-table{width:100%;border-collapse:collapse}
+.cat-table th{
+  background:#f8fafc;text-align:left;padding:9px 14px;
+  font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--text3);border-bottom:2px solid var(--border);
+}
+.cat-table td{padding:9px 14px;border-bottom:1px solid var(--border);font-size:12.5px;vertical-align:middle}
+.cat-table tr:last-child td{border-bottom:none}
+.cat-table tr:hover td{background:#f8fafc}
+.cat-chip{
+  display:inline-flex;align-items:center;gap:5px;
+  font-size:11.5px;font-weight:600;padding:3px 10px;border-radius:20px;
+}
+.chip-done{background:var(--green-bg);color:var(--green);border:1px solid var(--green-border)}
+.chip-pend{background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber-border)}
+.chip-zero{background:#f1f5f9;color:var(--text3);border:1px solid var(--border)}
+.cat-bar-wrap{display:flex;align-items:center;gap:6px}
+.cat-mini-track{flex:1;height:6px;background:#e5e7eb;border-radius:3px;overflow:hidden}
+.cat-mini-fill{height:100%;border-radius:3px;background:var(--blue)}
+.cat-mini-fill.done-fill{background:var(--green)}
+.cat-pct{font-family:var(--mono);font-size:10px;color:var(--text3);min-width:30px}
+.cat-total{font-family:var(--mono);font-size:12px;font-weight:700;color:var(--text)}
+
+/* ── Timeline ────────────────────────────────────────────────── */
+.timeline{display:flex;gap:0;overflow-x:auto;padding-bottom:4px}
+.tl-month{flex:1;min-width:200px;border-right:1px solid var(--border)}
+.tl-month:last-child{border-right:none}
+.tl-head{
+  padding:12px 14px;border-bottom:2px solid var(--border);
   display:flex;align-items:center;justify-content:space-between;
-  border-bottom:1px solid var(--border);
-  background:var(--surface2);
 }
-.table-title{font-family:'Syne',sans-serif;font-weight:700;font-size:.9rem;color:var(--navy)}
-.row-count{font-size:.78rem;color:var(--muted);background:var(--bg);padding:3px 10px;border-radius:20px;border:1px solid var(--border)}
-tsco... [truncated content for brevity]
+.tl-month-name{font-size:13px;font-weight:700;letter-spacing:.04em}
+.tl-count{font-family:var(--mono);font-size:11px;font-weight:700;padding:2px 8px;border-radius:10px}
+.tl-body{padding:10px 14px;display:flex;flex-direction:column;gap:5px;max-height:300px;overflow-y:auto}
+.tl-item{
+  font-size:11px;padding:5px 9px;border-radius:5px;
+  color:var(--text2);background:#f8fafc;border:1px solid var(--border);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  transition:background .12s;cursor:default;
+}
+.tl-item:hover{background:#e0e7ff;border-color:#c7d2fe;color:var(--blue)}
+.tl-body::-webkit-scrollbar{width:4px}
+.tl-body::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+
+/* ── LB Completed ────────────────────────────────────────────── */
+.lb-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:8px}
+.lb-item{
+  display:flex;align-items:center;gap:8px;
+  padding:9px 12px;border-radius:8px;
+  background:var(--green-bg);border:1px solid var(--green-border);
+  font-size:12px;font-weight:500;color:#065f46;
+}
+.lb-item::before{content:"✓";font-weight:800;color:var(--green);flex-shrink:0}
+
+/* ── Pipeline ────────────────────────────────────────────────── */
+.pipe-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:22px}
+@media(max-width:700px){.pipe-grid{grid-template-columns:1fr}}
+.pipe-card{
+  border-radius:var(--radius);padding:20px;
+  display:flex;flex-direction:column;gap:10px;
+  border:1.5px solid;box-shadow:var(--shadow-sm);
+  position:relative;overflow:hidden;
+}
+.pipe-card::after{
+  content:'';position:absolute;right:-20px;bottom:-20px;
+  width:80px;height:80px;border-radius:50%;opacity:.08;
+  background:currentColor;
+}
+.pipe-month{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;font-family:var(--mono)}
+.pipe-num{font-size:40px;font-weight:800;letter-spacing:-.03em;line-height:1}
+.pipe-label{font-size:12px;font-weight:500;opacity:.75}
+.pipe-may{background:var(--may-bg);border-color:#a5f3fc;color:var(--may)}
+.pipe-june{background:var(--june-bg);border-color:var(--purple-border);color:var(--purple)}
+.pipe-july{background:var(--july-bg);border-color:#fed7aa;color:var(--july)}
+
+/* ── Summary strip ───────────────────────────────────────────── */
+.summary-strip{
+  background:linear-gradient(135deg,#1e3a8a 0%,#2563eb 100%);
+  border-radius:var(--radius);padding:22px 28px;
+  margin-bottom:22px;color:#fff;
+  display:flex;align-items:center;justify-content:space-between;
+  flex-wrap:wrap;gap:16px;
+  box-shadow:var(--shadow-lg);
+}
+.strip-left h2{font-size:18px;font-weight:800;letter-spacing:-.01em;margin-bottom:4px}
+.strip-left p{font-size:12.5px;opacity:.75;font-family:var(--mono)}
+.strip-stats{display:flex;gap:24px;flex-wrap:wrap}
+.strip-stat{text-align:center}
+.strip-stat .num{font-size:28px;font-weight:800;letter-spacing:-.02em;line-height:1}
+.strip-stat .lbl{font-size:10.5px;opacity:.65;font-family:var(--mono);text-transform:uppercase;letter-spacing:.08em;margin-top:3px}
+
+/* ── Footer ──────────────────────────────────────────────────── */
+.footer{
+  margin-top:32px;padding-top:16px;border-top:1px solid var(--border);
+  display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;
+  font-size:11px;color:var(--text3);font-family:var(--mono);
+}
+
+/* ── Tab switcher ────────────────────────────────────────────── */
+.tabs{display:flex;gap:4px;background:#f1f5f9;border-radius:8px;padding:3px;margin-bottom:14px;width:fit-content}
+.tab-btn{
+  padding:6px 16px;border-radius:6px;font-size:12px;font-weight:600;
+  border:none;cursor:pointer;background:transparent;color:var(--text3);
+  transition:all .15s;font-family:var(--sans);
+}
+.tab-btn.active{background:#fff;color:var(--blue);box-shadow:var(--shadow-sm)}
+.tab-panel{display:none}.tab-panel.active{display:block}
+</style>
+</head>
+<body>
+<div class="page-wrap">
+
+<!-- ── Top Bar ── -->
+<div class="topbar">
+  <div class="topbar-left">
+    <div class="company-tag">ALEL · ENOVAR Brand · Capacity Study</div>
+    <div class="dash-title">SKU Study <span>Progress</span> Dashboard</div>
+    <div class="dash-sub">Sheet13 · Management Overview · Q2–Q3 2025</div>
+  </div>
+  <div class="topbar-right">
+    <div class="date-chip" id="dateChip">—</div>
+    <button class="print-btn no-print" onclick="window.print()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+      Print / PDF
+    </button>
+  </div>
+</div>
+
+<!-- ── Executive Summary Strip ── -->
+<div class="summary-strip">
+  <div class="strip-left">
+    <h2>ENOVAR Product Capacity Study</h2>
+    <p>3-month rolling study plan · May → July 2025</p>
+  </div>
+  <div class="strip-stats">
+    <div class="strip-stat"><div class="num">246</div><div class="lbl">Total SKUs</div></div>
+    <div class="strip-stat"><div class="num">24</div><div class="lbl">Completed</div></div>
+    <div class="strip-stat"><div class="num">222</div><div class="lbl">Pending</div></div>
+    <div class="strip-stat"><div class="num">9.8%</div><div class="lbl">Completion Rate</div></div>
+    <div class="strip-stat"><div class="num">24</div><div class="lbl">LB Done</div></div>
+  </div>
+</div>
+
+<!-- ── KPI Row ── -->
+<div class="section-label">Key Performance Indicators</div>
+<div class="kpi-row">
+  <div class="kpi" style="--kc:#2563eb">
+    <div class="kpi-icon">📦</div>
+    <div class="kpi-label">Total SKUs</div>
+    <div class="kpi-value">246</div>
+    <div class="kpi-sub">Full portfolio scope</div>
+    <div class="progress-wrap">
+      <div class="progress-track"><div class="progress-fill" style="width:100%"></div></div>
+    </div>
+  </div>
+  <div class="kpi" style="--kc:#059669">
+    <div class="kpi-icon">✅</div>
+    <div class="kpi-label">Capacity Study Done</div>
+    <div class="kpi-value">24</div>
+    <div class="kpi-sub">9.8% completion</div>
+    <div class="progress-wrap">
+      <div class="progress-track"><div class="progress-fill" style="width:9.8%;background:#059669"></div></div>
+      <div class="progress-labels"><span>0</span><span>246</span></div>
+    </div>
+  </div>
+  <div class="kpi" style="--kc:#d97706">
+    <div class="kpi-icon">🔄</div>
+    <div class="kpi-label">Pending Study</div>
+    <div class="kpi-value">222</div>
+    <div class="kpi-sub">90.2% remaining</div>
+    <div class="progress-wrap">
+      <div class="progress-track"><div class="progress-fill" style="width:90.2%;background:#d97706"></div></div>
+    </div>
+  </div>
+  <div class="kpi" style="--kc:#7c3aed">
+    <div class="kpi-icon">⚖️</div>
+    <div class="kpi-label">Line Balancing Done</div>
+    <div class="kpi-value">24</div>
+    <div class="kpi-sub">Of capacity-studied SKUs</div>
+    <div class="progress-wrap">
+      <div class="progress-track"><div class="progress-fill" style="width:100%;background:#7c3aed"></div></div>
+    </div>
+  </div>
+  <div class="kpi" style="--kc:#0891b2">
+    <div class="kpi-icon">📅</div>
+    <div class="kpi-label">3-Month Pipeline</div>
+    <div class="kpi-value">221</div>
+    <div class="kpi-sub">May 22 · Jun 134 · Jul 65</div>
+    <div class="progress-wrap">
+      <div class="progress-track"><div class="progress-fill" style="width:89.8%;background:#0891b2"></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Donut + Month Plan ── -->
+<div class="grid-2" style="margin-bottom:22px">
+
+  <!-- Completion Donut -->
+  <div class="card card-p">
+    <div class="section-label">Overall Study Completion</div>
+    <div class="donut-wrap">
+      <div style="position:relative;width:160px;height:160px">
+        <svg viewBox="0 0 160 160" width="160" height="160">
+          <!-- Track -->
+          <circle cx="80" cy="80" r="60" fill="none" stroke="#e5e7eb" stroke-width="20"/>
+          <!-- Done: 9.8% = 0.098 * 2π * 60 = 36.9 -->
+          <circle cx="80" cy="80" r="60" fill="none" stroke="#059669" stroke-width="20"
+            stroke-dasharray="36.9 340.1" stroke-dashoffset="0"
+            transform="rotate(-90 80 80)" stroke-linecap="round"/>
+          <!-- Pending: 90.2% -->
+          <circle cx="80" cy="80" r="60" fill="none" stroke="#fbbf24" stroke-width="20"
+            stroke-dasharray="313 64" stroke-dashoffset="-40.9"
+            transform="rotate(-90 80 80)" stroke-linecap="round"/>
+        </svg>
+        <div class="donut-center" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center">
+          <span class="donut-center-num">9.8%</span>
+          <span class="donut-center-sub">Done</span>
+        </div>
+      </div>
+      <div class="donut-legend">
+        <div class="legend-item">
+          <div class="legend-dot" style="background:#059669"></div>
+          <span class="legend-label">Completed</span>
+          <span class="legend-val">24</span>
+          <span class="legend-pct">9.8%</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot" style="background:#fbbf24"></div>
+          <span class="legend-label">Pending</span>
+          <span class="legend-val">222</span>
+          <span class="legend-pct">90.2%</span>
+        </div>
+        <div class="legend-item" style="margin-top:6px;padding-top:8px;border-top:1px solid var(--border)">
+          <div class="legend-dot" style="background:#7c3aed"></div>
+          <span class="legend-label">Line Balancing Done</span>
+          <span class="legend-val">24</span>
+          <span class="legend-pct">100%</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3-Month Pipeline -->
+  <div class="card card-p">
+    <div class="section-label">Possible Study — Next 3 Months</div>
+    <div class="pipe-grid" style="grid-template-columns:1fr;gap:10px;margin-bottom:0">
+
+      <div class="pipe-card pipe-may">
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <div class="pipe-month">May 2025</div>
+          <div style="font-size:10px;font-weight:600;background:rgba(8,145,178,.15);padding:3px 9px;border-radius:10px">Earliest</div>
+        </div>
+        <div style="display:flex;align-items:baseline;gap:8px">
+          <div class="pipe-num">22</div>
+          <div class="pipe-label">SKUs planned</div>
+        </div>
+        <div style="height:5px;background:rgba(8,145,178,.2);border-radius:3px;overflow:hidden">
+          <div style="height:100%;width:10%;background:var(--may);border-radius:3px"></div>
+        </div>
+      </div>
+
+      <div class="pipe-card pipe-june">
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <div class="pipe-month">June 2025</div>
+          <div style="font-size:10px;font-weight:600;background:rgba(124,58,237,.15);padding:3px 9px;border-radius:10px">Largest Batch</div>
+        </div>
+        <div style="display:flex;align-items:baseline;gap:8px">
+          <div class="pipe-num">134</div>
+          <div class="pipe-label">SKUs planned</div>
+        </div>
+        <div style="height:5px;background:rgba(124,58,237,.2);border-radius:3px;overflow:hidden">
+          <div style="height:100%;width:61%;background:var(--purple);border-radius:3px"></div>
+        </div>
+      </div>
+
+      <div class="pipe-card pipe-july">
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <div class="pipe-month">July 2025</div>
+          <div style="font-size:10px;font-weight:600;background:rgba(234,88,12,.15);padding:3px 9px;border-radius:10px">Final Wave</div>
+        </div>
+        <div style="display:flex;align-items:baseline;gap:8px">
+          <div class="pipe-num">65</div>
+          <div class="pipe-label">SKUs planned</div>
+        </div>
+        <div style="height:5px;background:rgba(234,88,12,.2);border-radius:3px;overflow:hidden">
+          <div style="height:100%;width:29%;background:var(--july);border-radius:3px"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<!-- ── Category Breakdown ── -->
+<div class="section-label">Category Breakdown — Capacity Study Status</div>
+<div class="card" style="margin-bottom:22px;overflow:hidden">
+  <table class="cat-table">
+    <thead>
+      <tr>
+        <th>Product Category</th>
+        <th>Total SKUs</th>
+        <th>Completed</th>
+        <th>Pending</th>
+        <th style="min-width:140px">Completion</th>
+      </tr>
+    </thead>
+    <tbody id="catTableBody"></tbody>
+  </table>
+</div>
+
+<!-- ── Month-wise Study Timeline ── -->
+<div class="section-label">Month-wise SKU Study Schedule</div>
+<div class="card" style="margin-bottom:22px;overflow:hidden">
+  <div style="padding:14px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
+    <span style="font-size:13px;font-weight:700;color:var(--text)">Planned Study Items by Target Month</span>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <span style="font-size:11px;font-family:var(--mono);background:var(--may-bg);border:1px solid #a5f3fc;color:var(--may);padding:3px 10px;border-radius:10px;font-weight:600">May: 22</span>
+      <span style="font-size:11px;font-family:var(--mono);background:var(--june-bg);border:1px solid var(--purple-border);color:var(--purple);padding:3px 10px;border-radius:10px;font-weight:600">June: 134</span>
+      <span style="font-size:11px;font-family:var(--mono);background:var(--july-bg);border:1px solid #fed7aa;color:var(--july);padding:3px 10px;border-radius:10px;font-weight:600">July: 65</span>
+    </div>
+  </div>
+  <div class="timeline">
+    <div class="tl-month">
+      <div class="tl-head" style="background:var(--may-bg)">
+        <span class="tl-month-name" style="color:var(--may)">May 2025</span>
+        <span class="tl-count" style="background:rgba(8,145,178,.12);color:var(--may)">22 SKUs</span>
+      </div>
+      <div class="tl-body" id="mayList"></div>
+    </div>
+    <div class="tl-month">
+      <div class="tl-head" style="background:var(--june-bg)">
+        <span class="tl-month-name" style="color:var(--purple)">June 2025</span>
+        <span class="tl-count" style="background:rgba(124,58,237,.1);color:var(--purple)">134 SKUs</span>
+      </div>
+      <div class="tl-body" id="juneList"></div>
+    </div>
+    <div class="tl-month">
+      <div class="tl-head" style="background:var(--july-bg)">
+        <span class="tl-month-name" style="color:var(--july)">July 2025</span>
+        <span class="tl-count" style="background:rgba(234,88,12,.1);color:var(--july)">65 SKUs</span>
+      </div>
+      <div class="tl-body" id="julyList"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Line Balancing Completed ── -->
+<div class="section-label">Line Balancing — Completed SKUs (24)</div>
+<div class="card card-p" style="margin-bottom:22px">
+  <div class="lb-grid" id="lbGrid"></div>
+</div>
+
+<!-- ── Footer ── -->
+<div class="footer">
+  <span>ALEL Capacity Study · Sheet13 · ENOVAR Brand</span>
+  <span>Generated <span id="footerDate"></span> · All data from internal capacity study sheets</span>
+</div>
+
+</div><!-- end page-wrap -->
+
+<script>
+const DATA = {"total_sku": 246, "done": 24, "pending": 222, "by_month": {"May": {"total": 22, "done": 0}, "June": {"total": 134, "done": 0}, "July": {"total": 65, "done": 0}}, "categories": {"AC/DC LED Bulb": {"total": 6, "done": 6}, "Bracket Tube": {"total": 5, "done": 3}, "Panel / Downlight": {"total": 24, "done": 0}, "Distribution Box": {"total": 5, "done": 3}, "Exhaust Fan": {"total": 4, "done": 2}, "Switches & Sockets": {"total": 123, "done": 6}, "Flood Light": {"total": 8, "done": 0}, "Other": {"total": 4, "done": 0}, "High Watt LED": {"total": 8, "done": 0}, "Holders & Accessories": {"total": 8, "done": 4}, "AC LED Bulb": {"total": 24, "done": 0}, "MCB": {"total": 27, "done": 0}}, "pipeline": {"May": 22, "June": 134, "July": 65}, "lb_done": 24, "lb_done_list": ["ENOVAR AC/DC LED 6W BULB B22", "ENOVAR AC/DC LED 6W BULB E27", "ENOVAR AC/DC LED 12W BULB B22", "ENOVAR AC/DC LED 12W BULB E27", "ENOVAR AC/DC LED 18W BULB B22", "ENOVAR AC/DC LED 18W BULB E27", "ENOVAR AC BRACKET TUBE 40W DL", "ENOVAR AC BRACKET TUBE 60W DL", "ENOVAR AC BRACKET TUBE 40W WC", "ENOVAR 4-6 WAY METAL DISTRIBUTION BOX", "ENOVAR 7-9 WAY METAL DISTRIBUTION BOX", "ENOVAR 10-13 WAY METAL DISTRIBUTION BOX", "ENOVAR EXHAUST FAN - 10 INCH", "ENOVAR EXHAUST FAN - 12 INCH", "ENOVAR 2 PIN PLUG 10A", "ENOVAR 3 PIN FLAT PLUG 13A", "ENOVAR OCTAGONAL HOLDER B22", "ENOVAR OCTAGONAL HOLDER E27", "ENOVAR PENDENT HOLDER B22", "ENOVAR PENDENT HOLDER E27", "ENOVAR PIANO ONE WAY SWITCH 6A", "ENOVAR PIANO 2 PIN SOCKET 5A", "ENOVAR PIANO FUSE 5A", "ENOVAR PIANO FAN DIMMER 200W"], "may_skus": ["ENOVAR AC BRACKET TUBE 10W DL", "ENOVAR AC BRACKET TUBE 80W DL", "ENOVAR 3 PIN ROUND PLUG 20A", "ENOVAR OCTAGONAL CEILING ROSE", "ENOVAR ROUND BATTEN HOLDER B22", "ENOVAR ROUND BATTEN HOLDER E27", "ENOVAR ROUND CEILING ROSE", "ENOVAR AC LED BULB 5W B22 DL", "ENOVAR AC LED BULB 5W E27 DL", "ENOVAR AC LED BULB 7W B22 DL", "ENOVAR AC LED BULB 7W E27 DL", "ENOVAR AC LED BULB 9W B22 DL", "ENOVAR AC LED BULB 9W E27 DL", "ENOVAR AC LED BULB 5W B22 WC", "ENOVAR AC LED BULB 5W E27 WC", "ENOVAR AC LED BULB 7W B22 WC", "ENOVAR AC LED BULB 7W E27 WC", "ENOVAR AC LED BULB 9W B22 WC", "ENOVAR AC LED BULB 9W E27 WC", "ENOVAR PIANO TWO WAY SWITCH 6A", "ENOVAR PIANO BELL PUSH 6A", "ENOVAR PIANO INDICATOR"], "june_skus": ["ENOVAR PLASTIC DISTRIBUTION BOX - L1", "ENOVAR PLASTIC DISTRIBUTION BOX - L2", "ENOVAR EXHAUST FAN - 6 INCH", "ENOVAR EXHAUST FAN - 8 INCH", "ENOVAR AURORA ONE GANG ONE WAY SWITCH 16A", "ENOVAR AURORA TWO GANG ONE WAY SWITCH 16A", "ENOVAR AURORA THREE GANG ONE WAY SWITCH 16A", "ENOVAR AURORA FOUR GANG ONE WAY SWITCH 16A", "ENOVAR AURORA ONE GANG TWO WAY SWITCH 16A", "ENOVAR AURORA TWO GANG TWO WAY SWITCH 16A", "ENOVAR AURORA BELL PUSH 16A", "ENOVAR AURORA FAN REGULATOR 500W", "ENOVAR AURORA DP SWITCH WITH NEON 45A", "ENOVAR AURORA 2 PIN SOCKET WITH SWITCH 10A", "ENOVAR AURORA 3 PIN MULTI SOCKET WITH SWITCH 13A", "ENOVAR AURORA 3 PIN ROUND SOCKET WITH SWITCH 32A", "ENOVAR AURORA 5 PIN MULTI SOCKET WITH SWITCH 13A", "ENOVAR AURORA TV SOCKET", "ENOVAR AURORA TELEPHONE SOCKET", "ENOVAR AURORA INTERNET SOCKET", "ENOVAR AURORA 5 PIN MULTI SOCKET WITH USB 13A", "ENOVAR AURORA 10 PIN MULTI SOCKET WITH SWITCH 13A", "ENOVAR AURORA DP SWITCH WITH NEON 20A", "ENOVAR AURORA BLANK PLATE", "ENOVAR CHERRY ONE GANG ONE WAY SWITCH 16A", "ENOVAR CHERRY TWO GANG ONE WAY SWITCH 16A", "ENOVAR CHERRY THREE GANG ONE WAY SWITCH 16A", "ENOVAR CHERRY FOUR GANG ONE WAY SWITCH 16A", "ENOVAR CHERRY ONE GANG TWO WAY SWITCH 16A", "ENOVAR CHERRY TWO GANG TWO WAY SWITCH 16A", "ENOVAR CHERRY BELL PUSH 16A", "ENOVAR CHERRY FAN REGULATOR 500W", "ENOVAR CHERRY 2 PIN SOCKET WITH SWITCH 10A", "ENOVAR CHERRY 3 PIN MULTI SOCKET WITH SWITCH 13A", "ENOVAR CHERRY 3 PIN ROUND SOCKET WITH SWITCH 15A", "ENOVAR CHERRY 5 PIN MULTI SOCKET WITH SWITCH 13A", "ENOVAR CHERRY TV SOCKET", "ENOVAR CHERRY TELEPHONE SOCKET", "ENOVAR CHERRY INTERNET SOCKET", "ENOVAR CHERRY 10 PIN MULTI SOCKET WITH SWITCH 13A", "ENOVAR CHERRY 5 PIN MULTI SOCKET WITH USB A+C 13A", "ENOVAR CHERRY DP SWITCH WITH NEON 32A", "ENOVAR CHERRY BLANK PLATE", "ENOVAR LUMIGOLD ONE GANG ONE WAY SWITCH 16A", "ENOVAR LUMIGOLD TWO GANG ONE WAY SWITCH 16A", "ENOVAR LUMIGOLD THREE GANG ONE WAY SWITCH 16A", "ENOVAR LUMIGOLD FOUR GANG ONE WAY SWITCH 16A", "ENOVAR LUMIGOLD ONE GANG TWO WAY SWITCH 16A", "ENOVAR LUMIGOLD TWO GANG TWO WAY SWITCH 16A", "ENOVAR LUMIGOLD BELL PUSH 16A", "ENOVAR LUMIGOLD FAN REGULATOR 500W", "ENOVAR LUMIGOLD DP SWITCH WITH NEON 45A", "ENOVAR LUMIGOLD 2 PIN SOCKET WITH SWITCH 10A", "ENOVAR LUMIGOLD 3 PIN MULTI SOCKET WITH SWITCH 13A", "ENOVAR LUMIGOLD 3 PIN ROUND SOCKET WITH SWITCH 15A", "ENOVAR LUMIGOLD 5 PIN MULTI SOCKET WITH SWITCH 13A", "ENOVAR LUMIGOLD TV SOCKET", "ENOVAR LUMIGOLD TELEPHONE SOCKET", "ENOVAR LUMIGOLD INTERNET SOCKET", "ENOVAR LUMIGOLD 3 PIN MULTI SOCKET WITH USB 13A", "ENOVAR LUMIGOLD 5 PIN MULTI SOCKET WITH USB 13A", "ENOVAR LUMIGOLD BLANK PLATE", "ENOVAR LUMIGOLD DP SWITCH WITH NEON 20A", "ENOVAR LUMIGOLD 10 PIN MULTI SOCKET WITH SWITCH 13A", "ENOVAR ONYX ONE GANG ONE WAY SWITCH 16A", "ENOVAR ONYX TWO GANG ONE WAY SWITCH 16A", "ENOVAR ONYX THREE GANG ONE WAY SWITCH 16A", "ENOVAR ONYX FOUR GANG ONE WAY SWITCH 16A", "ENOVAR ONYX ONE GANG TWO WAY SWITCH 16A", "ENOVAR ONYX TWO GANG TWO WAY SWITCH 16A", "ENOVAR ONYX BELL PUSH 16A", "ENOVAR ONYX FAN REGULATOR 500W", "ENOVAR ONYX DP SWITCH WITH NEON 45A", "ENOVAR ONYX 2 PIN SOCKET WITH SWITCH 10A", "ENOVAR ONYX 3 PIN MULTI SOCKET WITH SWITCH 13A", "ENOVAR ONYX 3 PIN ROUND SOCKET WITH SWITCH 32A", "ENOVAR ONYX 5 PIN MULTI SOCKET WITH SWITCH 13A", "ENOVAR ONYX TV SOCKET", "ENOVAR ONYX TELEPHONE SOCKET", "ENOVAR ONYX INTERNET SOCKET", "ENOVAR ONYX 3 PIN MULTI SOCKET WITH USB 13A", "ENOVAR ORCHID ONE GANG ONE WAY SWITCH 16A", "ENOVAR ORCHID TWO GANG ONE WAY SWITCH 16A", "ENOVAR ORCHID THREE GANG ONE WAY SWITCH 16A", "ENOVAR ORCHID FOUR GANG ONE WAY SWITCH 16A", "ENOVAR ORCHID ONE GANG TWO WAY SWITCH 16A", "ENOVAR ORCHID TWO GANG TWO WAY SWITCH 16A", "ENOVAR ORCHID BELL PUSH 16A", "ENOVAR ORCHID FAN REGULATOR 500W", "ENOVAR ORCHID DP SWITCH WITH NEON 45A", "ENOVAR ORCHID 2 PIN SOCKET WITH SWITCH 10A", "ENOVAR ORCHID 3 PIN MULTI SOCKET WITH SWITCH 13A", "ENOVAR ORCHID 3 PIN ROUND SOCKET WITH SWITCH 32A", "ENOVAR ORCHID 5 PIN MULTI SOCKET WITH SWITCH 13A", "ENOVAR ORCHID TV SOCKET", "ENOVAR ORCHID TELEPHONE SOCKET", "ENOVAR ORCHID INTERNET SOCKET", "ENOVAR ORCHID 5 PIN MULTI SOCKET WITH USB 13A", "ENOVAR ORCHID 10 PIN MULTI SOCKET WITH SWITCH 13A", "ENOVAR SAFFRON ONE GANG ONE WAY SWITCH 16A", "ENOVAR SAFFRON TWO GANG ONE WAY SWITCH 16A", "ENOVAR SAFFRON THREE GANG ONE WAY SWITCH 16A", "ENOVAR SAFFRON FOUR GANG ONE WAY SWITCH 16A", "ENOVAR SAFFRON ONE GANG TWO WAY SWITCH 16A", "ENOVAR SAFFRON TWO GANG TWO WAY SWITCH 16A", "ENOVAR SAFFRON BELL PUSH 16A", "ENOVAR SAFFRON FAN REGULATOR 500W", "ENOVAR SAFFRON DP SWITCH WITH NEON 45A", "ENOVAR SAFFRON 2 PIN SOCKET WITH SWITCH 10A", "ENOVAR SAFFRON 3 PIN MULTI SOCKET WITH SWITCH 13A", "ENOVAR SAFFRON 3 PIN ROUND SOCKET WITH SWITCH 32A", "ENOVAR SAFFRON 5 PIN MULTI SOCKET WITH SWITCH 13A", "ENOVAR SAFFRON TV SOCKET", "ENOVAR SAFFRON TELEPHONE SOCKET", "ENOVAR SAFFRON INTERNET SOCKET", "ENOVAR SAFFRON 3 PIN MULTI SOCKET WITH USB 13A", "ENOVAR SAFFRON 5 PIN MULTI SOCKET WITH USB 13A", "ENOVAR SAFFRON 10 PIN MULTI SOCKET WITH SWITCH 13A", "ENOVAR HIGH WATT LED 30W B22 DL", "ENOVAR HIGH WATT LED 30W E27 DL", "ENOVAR HIGH WATT LED 40W B22 DL", "ENOVAR HIGH WATT LED 40W E27 DL", "ENOVAR AC LED BULB 12W B22 DL", "ENOVAR AC LED BULB 12W E27 DL", "ENOVAR AC LED BULB 15W B22 DL", "ENOVAR AC LED BULB 15W E27 DL", "ENOVAR AC LED BULB 18W B22 DL", "ENOVAR AC LED BULB 18W E27 DL", "ENOVAR AC LED BULB 12W B22 WC", "ENOVAR AC LED BULB 12W E27 WC", "ENOVAR AC LED BULB 15W B22 WC", "ENOVAR AC LED BULB 15W E27 WC", "ENOVAR AC LED BULB 18W B22 WC", "ENOVAR AC LED BULB 18W E27 WC"], "july_skus": ["ENOVAR DOWN PANEL ROUND 7W DL", "ENOVAR DOWN PANEL ROUND 7W WC", "ENOVAR DOWN PANEL ROUND 7W RED", "ENOVAR DOWN PANEL ROUND 7W GREEN", "ENOVAR DOWN PANEL ROUND 7W BLUE", "ENOVAR DOWN PANEL ROUND 5W BLUE", "ENOVAR DOWN PANEL ROUND 5W GREEN", "ENOVAR DOWN PANEL ROUND 5W RED", "ENOVAR DOWN PANEL ROUND 5W WC", "ENOVAR DOWN PANEL ROUND 5W DL", "ENOVAR EXTENSION SOCKET WITH SWITCH - 3S", "ENOVAR EXTENSION SOCKET WITH SWITCH - 4S", "ENOVAR EXTENSION SOCKET WITH SWITCH - 5S", "ENOVAR FLOOD LIGHT 30W DL", "ENOVAR FLOOD LIGHT 50W DL", "ENOVAR FLOOD LIGHT 100W DL", "ENOVAR FLOOD LIGHT 150W DL", "ENOVAR FLOOD LIGHT 200W DL", "ENOVAR FLOOD LIGHT 30W WC", "ENOVAR FLOOD LIGHT 50W WC", "ENOVAR FLOOD LIGHT 100W WC", "ENOVAR HIGH WATT LED 50W B22 DL", "ENOVAR HIGH WATT LED 50W E27 DL", "ENOVAR HIGH WATT LED 70W B22 DL", "ENOVAR HIGH WATT LED 70W E27 DL", "ENOVAR SP MCB 06A 03KA", "ENOVAR SP MCB 10A 03KA", "ENOVAR SP MCB 16A 03KA", "ENOVAR SP MCB 20A 03KA", "ENOVAR SP MCB 25A 03KA", "ENOVAR SP MCB 32A 03KA", "ENOVAR SP MCB 40A 03KA", "ENOVAR SP MCB 50A 03KA", "ENOVAR SP MCB 63A 03KA", "ENOVAR DP MCB 06A 03KA", "ENOVAR DP MCB 10A 03KA", "ENOVAR DP MCB 16A 03KA", "ENOVAR DP MCB 20A 03KA", "ENOVAR DP MCB 25A 03KA", "ENOVAR DP MCB 32A 03KA", "ENOVAR DP MCB 40A 03KA", "ENOVAR DP MCB 50A 03KA", "ENOVAR DP MCB 63A 03KA", "ENOVAR TP MCB 06A 03KA", "ENOVAR TP MCB 10A 03KA", "ENOVAR TP MCB 16A 03KA", "ENOVAR TP MCB 20A 03KA", "ENOVAR TP MCB 25A 03KA", "ENOVAR TP MCB 32A 03KA", "ENOVAR TP MCB 40A 03KA", "ENOVAR TP MCB 50A 03KA", "ENOVAR TP MCB 63A 03KA", "ENOVAR CONCEAL PANEL SQUARE 2X2FT 40W DL", "ENOVAR PANEL SURFACE ROUND 6W DL", "ENOVAR PANEL SURFACE SQUARE 6W DL", "ENOVAR PANEL CONCEAL ROUND 6W DL", "ENOVAR PANEL CONCEAL SQUARE 6W DL", "ENOVAR PANEL SURFACE ROUND 12W DL", "ENOVAR PANEL SURFACE SQUARE 12W DL", "ENOVAR PANEL CONCEAL ROUND 12W DL", "ENOVAR PANEL CONCEAL SQUARE 12W DL", "ENOVAR PANEL SURFACE ROUND 18W DL", "ENOVAR PANEL SURFACE SQUARE 18W DL", "ENOVAR PANEL CONCEAL ROUND 18W DL", "ENOVAR PANEL CONCEAL SQUARE 18W DL"], "done_skus": ["ENOVAR AC/DC LED 6W BULB B22", "ENOVAR AC/DC LED 6W BULB E27", "ENOVAR AC/DC LED 12W BULB B22", "ENOVAR AC/DC LED 12W BULB E27", "ENOVAR AC/DC LED 18W BULB B22", "ENOVAR AC/DC LED 18W BULB E27", "ENOVAR AC BRACKET TUBE 40W DL", "ENOVAR AC BRACKET TUBE 60W DL", "ENOVAR AC BRACKET TUBE 40W WC", "ENOVAR 4-6 WAY METAL DISTRIBUTION BOX", "ENOVAR 7-9 WAY METAL DISTRIBUTION BOX", "ENOVAR 10-13 WAY METAL DISTRIBUTION BOX", "ENOVAR EXHAUST FAN - 10 INCH", "ENOVAR EXHAUST FAN - 12 INCH", "ENOVAR 2 PIN PLUG 10A", "ENOVAR 3 PIN FLAT PLUG 13A", "ENOVAR OCTAGONAL HOLDER B22", "ENOVAR OCTAGONAL HOLDER E27", "ENOVAR PENDENT HOLDER B22", "ENOVAR PENDENT HOLDER E27", "ENOVAR PIANO ONE WAY SWITCH 6A", "ENOVAR PIANO 2 PIN SOCKET 5A", "ENOVAR PIANO FUSE 5A", "ENOVAR PIANO FAN DIMMER 200W"], "all_skus": [{"sku": "ENOVAR AC/DC LED 6W BULB B22", "done": true, "month": null}, {"sku": "ENOVAR AC/DC LED 6W BULB E27", "done": true, "month": null}, {"sku": "ENOVAR AC/DC LED 12W BULB B22", "done": true, "month": null}, {"sku": "ENOVAR AC/DC LED 12W BULB E27", "done": true, "month": null}, {"sku": "ENOVAR AC/DC LED 18W BULB B22", "done": true, "month": null}, {"sku": "ENOVAR AC/DC LED 18W BULB E27", "done": true, "month": null}, {"sku": "ENOVAR AC BRACKET TUBE 10W DL", "done": false, "month": "May"}, {"sku": "ENOVAR AC BRACKET TUBE 40W DL", "done": true, "month": null}, {"sku": "ENOVAR AC BRACKET TUBE 60W DL", "done": true, "month": null}, {"sku": "ENOVAR AC BRACKET TUBE 40W WC", "done": true, "month": null}, {"sku": "ENOVAR AC BRACKET TUBE 80W DL", "done": false, "month": "May"}, {"sku": "ENOVAR CONCEALED BOX - PLASTIC", "done": false, "month": null}, {"sku": "ENOVAR PLASTIC DISTRIBUTION BOX - L1", "done": false, "month": "June"}, {"sku": "ENOVAR PLASTIC DISTRIBUTION BOX - L2", "done": false, "month": "June"}, {"sku": "ENOVAR 4-6 WAY METAL DISTRIBUTION BOX", "done": true, "month": null}, {"sku": "ENOVAR 7-9 WAY METAL DISTRIBUTION BOX", "done": true, "month": null}, {"sku": "ENOVAR 10-13 WAY METAL DISTRIBUTION BOX", "done": true, "month": null}, {"sku": "ENOVAR DOWN PANEL ROUND 7W DL", "done": false, "month": "July"}, {"sku": "ENOVAR DOWN PANEL ROUND 7W WC", "done": false, "month": "July"}, {"sku": "ENOVAR DOWN PANEL ROUND 7W RED", "done": false, "month": "July"}, {"sku": "ENOVAR DOWN PANEL ROUND 7W GREEN", "done": false, "month": "July"}, {"sku": "ENOVAR DOWN PANEL ROUND 7W BLUE", "done": false, "month": "July"}, {"sku": "ENOVAR DOWN PANEL ROUND 5W BLUE", "done": false, "month": "July"}, {"sku": "ENOVAR DOWN PANEL ROUND 5W GREEN", "done": false, "month": "July"}, {"sku": "ENOVAR DOWN PANEL ROUND 5W RED", "done": false, "month": "July"}, {"sku": "ENOVAR DOWN PANEL ROUND 5W WC", "done": false, "month": "July"}, {"sku": "ENOVAR DOWN PANEL ROUND 5W DL", "done": false, "month": "July"}, {"sku": "ENOVAR EXHAUST FAN - 6 INCH", "done": false, "month": "June"}, {"sku": "ENOVAR EXHAUST FAN - 8 INCH", "done": false, "month": "June"}, {"sku": "ENOVAR EXHAUST FAN - 10 INCH", "done": true, "month": null}, {"sku": "ENOVAR EXHAUST FAN - 12 INCH", "done": true, "month": null}, {"sku": "ENOVAR EXTENSION SOCKET WITH SWITCH - 3S", "done": false, "month": "July"}, {"sku": "ENOVAR EXTENSION SOCKET WITH SWITCH - 4S", "done": false, "month": "July"}, {"sku": "ENOVAR EXTENSION SOCKET WITH SWITCH - 5S", "done": false, "month": "July"}, {"sku": "ENOVAR FLOOD LIGHT 30W DL", "done": false, "month": "July"}, {"sku": "ENOVAR FLOOD LIGHT 50W DL", "done": false, "month": "July"}, {"sku": "ENOVAR FLOOD LIGHT 100W DL", "done": false, "month": "July"}, {"sku": "ENOVAR FLOOD LIGHT 150W DL", "done": false, "month": "July"}, {"sku": "ENOVAR FLOOD LIGHT 200W DL", "done": false, "month": "July"}, {"sku": "ENOVAR FLOOD LIGHT 30W WC", "done": false, "month": "July"}, {"sku": "ENOVAR FLOOD LIGHT 50W WC", "done": false, "month": "July"}, {"sku": "ENOVAR FLOOD LIGHT 100W WC", "done": false, "month": "July"}, {"sku": "ENOVAR AURORA ONE GANG ONE WAY SWITCH 16A", "done": false, "month": "June"}, {"sku": "ENOVAR AURORA TWO GANG ONE WAY SWITCH 16A", "done": false, "month": "June"}, {"sku": "ENOVAR AURORA THREE GANG ONE WAY SWITCH 16A", "done": false, "month": "June"}, {"sku": "ENOVAR AURORA FOUR GANG ONE WAY SWITCH 16A", "done": false, "month": "June"}, {"sku": "ENOVAR AURORA ONE GANG TWO WAY SWITCH 16A", "done": false, "month": "June"}, {"sku": "ENOVAR AURORA TWO GANG TWO WAY SWITCH 16A", "done": false, "month": "June"}, {"sku": "ENOVAR AURORA BELL PUSH 16A", "done": false, "month": "June"}, {"sku": "ENOVAR AURORA FAN REGULATOR 500W", "done": false, "month": "June"}, {"sku": "ENOVAR AURORA DP SWITCH WITH NEON 45A", "done": false, "month": "June"}, {"sku": "ENOVAR AURORA 2 PIN SOCKET WITH SWITCH 10A", "done": false, "month": "June"}, {"sku": "ENOVAR AURORA 3 PIN MULTI SOCKET WITH SWITCH 13A", "done": false, "month": "June"}, {"sku": "ENOVAR AURORA 3 PIN ROUND SOCKET WITH SWITCH 32A", "done": false, "month": "June"}, {"sku": "ENOVAR AURORA 5 PIN MULTI SOCKET WITH SWITCH 13A", "done": false, "month": "June"}, {"sku": "ENOVAR AURORA TV SOCKET", "done": false, "month": "June"}, {"sku": "ENOVAR AURORA TELEPHONE SOCKET", "done": false, "month": "June"}, {"sku": "ENOVAR AURORA INTERNET SOCKET", "done": false, "month": "June"}, {"sku": "ENOVAR AURORA 5 PIN MULTI SOCKET WITH USB 13A", "done": false, "month": "June"}, {"sku": "ENOVAR AURORA 10 PIN MULTI SOCKET WITH SWITCH 13A", "done": false, "month": "June"}, {"sku": "ENOVAR AURORA DP SWITCH WITH NEON 20A", "done": false, "month": "June"}, {"sku": "ENOVAR AURORA BLANK PLATE", "done": false, "month": "June"}, {"sku": "ENOVAR CHERRY ONE GANG ONE WAY SWITCH 16A", "done": false, "month": "June"}, {"sku": "ENOVAR CHERRY TWO GANG ONE WAY SWITCH 16A", "done": false, "month": "June"}, {"sku": "ENOVAR CHERRY THREE GANG ONE WAY SWITCH 16A", "done": false, "month": "June"}, {"sku": "ENOVAR CHERRY FOUR GANG ONE WAY SWITCH 16A", "done": false, "month": "June"}, {"sku": "ENOVAR CHERRY ONE GANG TWO WAY SWITCH 16A", "done": false, "month": "June"}, {"sku": "ENOVAR CHERRY TWO GANG TWO WAY SWITCH 16A", "done": false, "month": "June"}, {"sku": "ENOVAR CHERRY BELL PUSH 16A", "done": false, "month": "June"}, {"sku": "ENOVAR CHERRY FAN REGULATOR 500W", "done": false, "month": "June"}, {"sku": "ENOVAR CHERRY 2 PIN SOCKET WITH SWITCH 10A", "done": false, "month": "June"}, {"sku": "ENOVAR CHERRY 3 PIN MULTI SOCKET WITH SWITCH 13A", "done": false, "month": "June"}, {"sku": "ENOVAR CHERRY 3 PIN ROUND SOCKET WITH SWITCH 15A", "done": false, "month": "June"}, {"sku": "ENOVAR CHERRY 5 PIN MULTI SOCKET WITH SWITCH 13A", "done": false, "month": "June"}, {"sku": "ENOVAR CHERRY TV SOCKET", "done": false, "month": "June"}, {"sku": "ENOVAR CHERRY TELEPHONE SOCKET", "done": false, "month": "June"}, {"sku": "ENOVAR CHERRY INTERNET SOCKET", "done": false, "month": "June"}, {"sku": "ENOVAR CHERRY 10 PIN MULTI SOCKET WITH SWITCH 13A", "done": false, "month": "June"}, {"sku": "ENOVAR CHERRY 5 PIN MULTI SOCKET WITH USB A+C 13A", "done": false, "month": "June"}, {"sku": "ENOVAR CHERRY DP SWITCH WITH NEON 32A", "done": false, "month": "June"}, {"sku": "ENOVAR CHERRY BLANK PLATE", "done": false, "month": "June"}, {"sku": "ENOVAR LUMIGOLD ONE GANG ONE WAY SWITCH 16A", "done": false, "month": "June"}, {"sku": "ENOVAR LUMIGOLD TWO GANG ONE WAY SWITCH 16A", "done": false, "month": "June"}, {"sku": "ENOVAR LUMIGOLD THREE GANG ONE WAY SWITCH 16A", "done": false, "month": "June"}, {"sku": "ENOVAR LUMIGOLD FOUR GANG ONE WAY SWITCH 16A", "done": false, "month": "June"}, {"sku": "ENOVAR LUMIGOLD ONE GANG TWO WAY SWITCH 16A", "done": false, "month": "June"}, {"sku": "ENOVAR LUMIGOLD TWO GANG TWO WAY SWITCH 16A", "done": false, "month": "June"}, {"sku": "ENOVAR LUMIGOLD BELL PUSH 16A", "done": false, "month": "June"}, {"sku": "ENOVAR LUMIGOLD FAN REGULATOR 500W", "done": false, "month": "June"}, {"sku": "ENOVAR LUMIGOLD DP SWITCH WITH NEON 45A", "done": false, "month": "June"}, {"sku": "ENOVAR LUMIGOLD 2 PIN SOCKET WITH SWITCH 10A", "done": false, "month": "June"}, {"sku": "ENOVAR LUMIGOLD 3 PIN MULTI SOCKET WITH SWITCH 13A", "done": false, "month": "June"}, {"sku": "ENOVAR LUMIGOLD 3 PIN ROUND SOCKET WITH SWITCH 15A", "done": false, "month": "June"}, {"sku": "ENOVAR LUMIGOLD 5 PIN MULTI SOCKET WITH SWITCH 13A", "done": false, "month": "June"}, {"sku": "ENOVAR LUMIGOLD TV SOCKET", "done": false, "month": "June"}, {"sku": "ENOVAR LUMIGOLD TELEPHONE SOCKET", "done": false, "month": "June"}, {"sku": "ENOVAR LUMIGOLD INTERNET SOCKET", "done": false, "month": "June"}, {"sku": "ENOVAR LUMIGOLD 3 PIN MULTI SOCKET WITH USB 13A", "done": false, "month": "June"}, {"sku": "ENOVAR LUMIGOLD 5 PIN MULTI SOCKET WITH USB 13A", "done": false, "month": "June"}, {"sku": "ENOVAR LUMIGOLD BLANK PLATE", "done": false, "month": "June"}, {"sku": "ENOVAR LUMIGOLD DP SWITCH WITH NEON 20A", "done": false, "month": "June"}, {"sku": "ENOVAR LUMIGOLD 10 PIN MULTI SOCKET WITH SWITCH 13A", "done": false, "month": "June"}, {"sku": "ENOVAR ONYX ONE GANG ONE WAY SWITCH 16A", "done": false, "month": "June"}, {"sku": "ENOVAR ONYX TWO GANG ONE WAY SWITCH 16A", "done": false, "month": "June"}, {"sku": "ENOVAR ONYX THREE GANG ONE WAY SWITCH 16A", "done": false, "month": "June"}, {"sku": "ENOVAR ONYX FOUR GANG ONE WAY SWITCH 16A", "done": false, "month": "June"}, {"sku": "ENOVAR ONYX ONE GANG TWO WAY SWITCH 16A", "done": false, "month": "June"}, {"sku": "ENOVAR ONYX TWO GANG TWO WAY SWITCH 16A", "done": false, "month": "June"}, {"sku": "ENOVAR ONYX BELL PUSH 16A", "done": false, "month": "June"}, {"sku": "ENOVAR ONYX FAN REGULATOR 500W", "done": false, "month": "June"}, {"sku": "ENOVAR ONYX DP SWITCH WITH NEON 45A", "done": false, "month": "June"}, {"sku": "ENOVAR ONYX 2 PIN SOCKET WITH SWITCH 10A", "done": false, "month": "June"}, {"sku": "ENOVAR ONYX 3 PIN MULTI SOCKET WITH SWITCH 13A", "done": false, "month": "June"}, {"sku": "ENOVAR ONYX 3 PIN ROUND SOCKET WITH SWITCH 32A", "done": false, "month": "June"}, {"sku": "ENOVAR ONYX 5 PIN MULTI SOCKET WITH SWITCH 13A", "done": false, "month": "June"}, {"sku": "ENOVAR ONYX TV SOCKET", "done": false, "month": "June"}, {"sku": "ENOVAR ONYX TELEPHONE SOCKET", "done": false, "month": "June"}, {"sku": "ENOVAR ONYX INTERNET SOCKET", "done": false, "month": "June"}, {"sku": "ENOVAR ONYX 3 PIN MULTI SOCKET WITH USB 13A", "done": false, "month": "June"}, {"sku": "ENOVAR ORCHID ONE GANG ONE WAY SWITCH 16A", "done": false, "month": "June"}, {"sku": "ENOVAR ORCHID TWO GANG ONE WAY SWITCH 16A", "done": false, "month": "June"}, {"sku": "ENOVAR ORCHID THREE GANG ONE WAY SWITCH 16A", "done": false, "month": "June"}, {"sku": "ENOVAR ORCHID FOUR GANG ONE WAY SWITCH 16A", "done": false, "month": "June"}, {"sku": "ENOVAR ORCHID ONE GANG TWO WAY SWITCH 16A", "done": false, "month": "June"}, {"sku": "ENOVAR ORCHID TWO GANG TWO WAY SWITCH 16A", "done": false, "month": "June"}, {"sku": "ENOVAR ORCHID BELL PUSH 16A", "done": false, "month": "June"}, {"sku": "ENOVAR ORCHID FAN REGULATOR 500W", "done": false, "month": "June"}, {"sku": "ENOVAR ORCHID DP SWITCH WITH NEON 45A", "done": false, "month": "June"}, {"sku": "ENOVAR ORCHID 2 PIN SOCKET WITH SWITCH 10A", "done": false, "month": "June"}, {"sku": "ENOVAR ORCHID 3 PIN MULTI SOCKET WITH SWITCH 13A", "done": false, "month": "June"}, {"sku": "ENOVAR ORCHID 3 PIN ROUND SOCKET WITH SWITCH 32A", "done": false, "month": "June"}, {"sku": "ENOVAR ORCHID 5 PIN MULTI SOCKET WITH SWITCH 13A", "done": false, "month": "June"}, {"sku": "ENOVAR ORCHID TV SOCKET", "done": false, "month": "June"}, {"sku": "ENOVAR ORCHID TELEPHONE SOCKET", "done": false, "month": "June"}, {"sku": "ENOVAR ORCHID INTERNET SOCKET", "done": false, "month": "June"}, {"sku": "ENOVAR ORCHID 5 PIN MULTI SOCKET WITH USB 13A", "done": false, "month": "June"}, {"sku": "ENOVAR ORCHID 10 PIN MULTI SOCKET WITH SWITCH 13A", "done": false, "month": "June"}, {"sku": "ENOVAR SAFFRON ONE GANG ONE WAY SWITCH 16A", "done": false, "month": "June"}, {"sku": "ENOVAR SAFFRON TWO GANG ONE WAY SWITCH 16A", "done": false, "month": "June"}, {"sku": "ENOVAR SAFFRON THREE GANG ONE WAY SWITCH 16A", "done": false, "month": "June"}, {"sku": "ENOVAR SAFFRON FOUR GANG ONE WAY SWITCH 16A", "done": false, "month": "June"}, {"sku": "ENOVAR SAFFRON ONE GANG TWO WAY SWITCH 16A", "done": false, "month": "June"}, {"sku": "ENOVAR SAFFRON TWO GANG TWO WAY SWITCH 16A", "done": false, "month": "June"}, {"sku": "ENOVAR SAFFRON BELL PUSH 16A", "done": false, "month": "June"}, {"sku": "ENOVAR SAFFRON FAN REGULATOR 500W", "done": false, "month": "June"}, {"sku": "ENOVAR SAFFRON DP SWITCH WITH NEON 45A", "done": false, "month": "June"}, {"sku": "ENOVAR SAFFRON 2 PIN SOCKET WITH SWITCH 10A", "done": false, "month": "June"}, {"sku": "ENOVAR SAFFRON 3 PIN MULTI SOCKET WITH SWITCH 13A", "done": false, "month": "June"}, {"sku": "ENOVAR SAFFRON 3 PIN ROUND SOCKET WITH SWITCH 32A", "done": false, "month": "June"}, {"sku": "ENOVAR SAFFRON 5 PIN MULTI SOCKET WITH SWITCH 13A", "done": false, "month": "June"}, {"sku": "ENOVAR SAFFRON TV SOCKET", "done": false, "month": "June"}, {"sku": "ENOVAR SAFFRON TELEPHONE SOCKET", "done": false, "month": "June"}, {"sku": "ENOVAR SAFFRON INTERNET SOCKET", "done": false, "month": "June"}, {"sku": "ENOVAR SAFFRON 3 PIN MULTI SOCKET WITH USB 13A", "done": false, "month": "June"}, {"sku": "ENOVAR SAFFRON 5 PIN MULTI SOCKET WITH USB 13A", "done": false, "month": "June"}, {"sku": "ENOVAR SAFFRON 10 PIN MULTI SOCKET WITH SWITCH 13A", "done": false, "month": "June"}, {"sku": "ENOVAR HIGH WATT LED 30W B22 DL", "done": false, "month": "June"}, {"sku": "ENOVAR HIGH WATT LED 30W E27 DL", "done": false, "month": "June"}, {"sku": "ENOVAR HIGH WATT LED 40W B22 DL", "done": false, "month": "June"}, {"sku": "ENOVAR HIGH WATT LED 40W E27 DL", "done": false, "month": "June"}, {"sku": "ENOVAR HIGH WATT LED 50W B22 DL", "done": false, "month": "July"}, {"sku": "ENOVAR HIGH WATT LED 50W E27 DL", "done": false, "month": "July"}, {"sku": "ENOVAR HIGH WATT LED 70W B22 DL", "done": false, "month": "July"}, {"sku": "ENOVAR HIGH WATT LED 70W E27 DL", "done": false, "month": "July"}, {"sku": "ENOVAR 2 PIN PLUG 10A", "done": true, "month": null}, {"sku": "ENOVAR 3 PIN FLAT PLUG 13A", "done": true, "month": null}, {"sku": "ENOVAR 3 PIN ROUND PLUG 20A", "done": false, "month": "May"}, {"sku": "ENOVAR OCTAGONAL HOLDER B22", "done": true, "month": null}, {"sku": "ENOVAR OCTAGONAL HOLDER E27", "done": true, "month": null}, {"sku": "ENOVAR OCTAGONAL CEILING ROSE", "done": false, "month": "May"}, {"sku": "ENOVAR PENDENT HOLDER B22", "done": true, "month": null}, {"sku": "ENOVAR PENDENT HOLDER E27", "done": true, "month": null}, {"sku": "ENOVAR ROUND BATTEN HOLDER B22", "done": false, "month": "May"}, {"sku": "ENOVAR ROUND BATTEN HOLDER E27", "done": false, "month": "May"}, {"sku": "ENOVAR ROUND CEILING ROSE", "done": false, "month": "May"}, {"sku": "ENOVAR AC LED BULB 5W B22 DL", "done": false, "month": "May"}, {"sku": "ENOVAR AC LED BULB 5W E27 DL", "done": false, "month": "May"}, {"sku": "ENOVAR AC LED BULB 7W B22 DL", "done": false, "month": "May"}, {"sku": "ENOVAR AC LED BULB 7W E27 DL", "done": false, "month": "May"}, {"sku": "ENOVAR AC LED BULB 9W B22 DL", "done": false, "month": "May"}, {"sku": "ENOVAR AC LED BULB 9W E27 DL", "done": false, "month": "May"}, {"sku": "ENOVAR AC LED BULB 12W B22 DL", "done": false, "month": "June"}, {"sku": "ENOVAR AC LED BULB 12W E27 DL", "done": false, "month": "June"}, {"sku": "ENOVAR AC LED BULB 15W B22 DL", "done": false, "month": "June"}, {"sku": "ENOVAR AC LED BULB 15W E27 DL", "done": false, "month": "June"}, {"sku": "ENOVAR AC LED BULB 18W B22 DL", "done": false, "month": "June"}, {"sku": "ENOVAR AC LED BULB 18W E27 DL", "done": false, "month": "June"}, {"sku": "ENOVAR AC LED BULB 5W B22 WC", "done": false, "month": "May"}, {"sku": "ENOVAR AC LED BULB 5W E27 WC", "done": false, "month": "May"}, {"sku": "ENOVAR AC LED BULB 7W B22 WC", "done": false, "month": "May"}, {"sku": "ENOVAR AC LED BULB 7W E27 WC", "done": false, "month": "May"}, {"sku": "ENOVAR AC LED BULB 9W B22 WC", "done": false, "month": "May"}, {"sku": "ENOVAR AC LED BULB 9W E27 WC", "done": false, "month": "May"}, {"sku": "ENOVAR AC LED BULB 12W B22 WC", "done": false, "month": "June"}, {"sku": "ENOVAR AC LED BULB 12W E27 WC", "done": false, "month": "June"}, {"sku": "ENOVAR AC LED BULB 15W B22 WC", "done": false, "month": "June"}, {"sku": "ENOVAR AC LED BULB 15W E27 WC", "done": false, "month": "June"}, {"sku": "ENOVAR AC LED BULB 18W B22 WC", "done": false, "month": "June"}, {"sku": "ENOVAR AC LED BULB 18W E27 WC", "done": false, "month": "June"}, {"sku": "ENOVAR SP MCB 06A 03KA", "done": false, "month": "July"}, {"sku": "ENOVAR SP MCB 10A 03KA", "done": false, "month": "July"}, {"sku": "ENOVAR SP MCB 16A 03KA", "done": false, "month": "July"}, {"sku": "ENOVAR SP MCB 20A 03KA", "done": false, "month": "July"}, {"sku": "ENOVAR SP MCB 25A 03KA", "done": false, "month": "July"}, {"sku": "ENOVAR SP MCB 32A 03KA", "done": false, "month": "July"}, {"sku": "ENOVAR SP MCB 40A 03KA", "done": false, "month": "July"}, {"sku": "ENOVAR SP MCB 50A 03KA", "done": false, "month": "July"}, {"sku": "ENOVAR SP MCB 63A 03KA", "done": false, "month": "July"}, {"sku": "ENOVAR DP MCB 06A 03KA", "done": false, "month": "July"}, {"sku": "ENOVAR DP MCB 10A 03KA", "done": false, "month": "July"}, {"sku": "ENOVAR DP MCB 16A 03KA", "done": false, "month": "July"}, {"sku": "ENOVAR DP MCB 20A 03KA", "done": false, "month": "July"}, {"sku": "ENOVAR DP MCB 25A 03KA", "done": false, "month": "July"}, {"sku": "ENOVAR DP MCB 32A 03KA", "done": false, "month": "July"}, {"sku": "ENOVAR DP MCB 40A 03KA", "done": false, "month": "July"}, {"sku": "ENOVAR DP MCB 50A 03KA", "done": false, "month": "July"}, {"sku": "ENOVAR DP MCB 63A 03KA", "done": false, "month": "July"}, {"sku": "ENOVAR TP MCB 06A 03KA", "done": false, "month": "July"}, {"sku": "ENOVAR TP MCB 10A 03KA", "done": false, "month": "July"}, {"sku": "ENOVAR TP MCB 16A 03KA", "done": false, "month": "July"}, {"sku": "ENOVAR TP MCB 20A 03KA", "done": false, "month": "July"}, {"sku": "ENOVAR TP MCB 25A 03KA", "done": false, "month": "July"}, {"sku": "ENOVAR TP MCB 32A 03KA", "done": false, "month": "July"}, {"sku": "ENOVAR TP MCB 40A 03KA", "done": false, "month": "July"}, {"sku": "ENOVAR TP MCB 50A 03KA", "done": false, "month": "July"}, {"sku": "ENOVAR TP MCB 63A 03KA", "done": false, "month": "July"}, {"sku": "ENOVAR CONCEAL PANEL SQUARE 2X2FT 40W DL", "done": false, "month": "July"}, {"sku": "ENOVAR PIANO ONE WAY SWITCH 6A", "done": true, "month": null}, {"sku": "ENOVAR PIANO TWO WAY SWITCH 6A", "done": false, "month": "May"}, {"sku": "ENOVAR PIANO BELL PUSH 6A", "done": false, "month": "May"}, {"sku": "ENOVAR PIANO 2 PIN SOCKET 5A", "done": true, "month": null}, {"sku": "ENOVAR PIANO FUSE 5A", "done": true, "month": null}, {"sku": "ENOVAR PIANO INDICATOR", "done": false, "month": "May"}, {"sku": "ENOVAR PIANO FAN DIMMER 200W", "done": true, "month": null}, {"sku": "ENOVAR PANEL SURFACE ROUND 6W DL", "done": false, "month": "July"}, {"sku": "ENOVAR PANEL SURFACE SQUARE 6W DL", "done": false, "month": "July"}, {"sku": "ENOVAR PANEL CONCEAL ROUND 6W DL", "done": false, "month": "July"}, {"sku": "ENOVAR PANEL CONCEAL SQUARE 6W DL", "done": false, "month": "July"}, {"sku": "ENOVAR PANEL SURFACE ROUND 12W DL", "done": false, "month": "July"}, {"sku": "ENOVAR PANEL SURFACE SQUARE 12W DL", "done": false, "month": "July"}, {"sku": "ENOVAR PANEL CONCEAL ROUND 12W DL", "done": false, "month": "July"}, {"sku": "ENOVAR PANEL CONCEAL SQUARE 12W DL", "done": false, "month": "July"}, {"sku": "ENOVAR PANEL SURFACE ROUND 18W DL", "done": false, "month": "July"}, {"sku": "ENOVAR PANEL SURFACE SQUARE 18W DL", "done": false, "month": "July"}, {"sku": "ENOVAR PANEL CONCEAL ROUND 18W DL", "done": false, "month": "July"}, {"sku": "ENOVAR PANEL CONCEAL SQUARE 18W DL", "done": false, "month": "July"}]};
+
+// ── Date ──
+const now = new Date();
+const dateStr = now.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'long',year:'numeric'});
+document.getElementById('dateChip').textContent = dateStr;
+document.getElementById('footerDate').textContent = dateStr;
+
+// ── Category table ──
+const cats = DATA.categories;
+const catOrder = [
+  ['Switches & Sockets','#2563eb'],
+  ['MCB','#7c3aed'],
+  ['Panel / Downlight','#0891b2'],
+  ['AC LED Bulb','#059669'],
+  ['Flood Light','#f59e0b'],
+  ['High Watt LED','#f97316'],
+  ['Holders & Accessories','#14b8a6'],
+  ['AC/DC LED Bulb','#22c55e'],
+  ['Bracket Tube','#a855f7'],
+  ['Distribution Box','#ef4444'],
+  ['Exhaust Fan','#06b6d4'],
+  ['Other','#94a3b8'],
+];
+const maxTotal = Math.max(...catOrder.map(([k])=>cats[k]?cats[k].total:0));
+const tbody = document.getElementById('catTableBody');
+catOrder.forEach(([cat, color]) => {
+  if(!cats[cat]) return;
+  const {total, done} = cats[cat];
+  const pend = total - done;
+  const pct = Math.round(done/total*100);
+  const tr = document.createElement('tr');
+  tr.innerHTML = `
+    <td><span style="display:inline-flex;align-items:center;gap:7px">
+      <span style="width:10px;height:10px;border-radius:3px;background:${color};flex-shrink:0;display:inline-block"></span>
+      <strong style="font-size:12.5px">${cat}</strong>
+    </span></td>
+    <td><span class="cat-total">${total}</span></td>
+    <td>${done>0?`<span class="cat-chip chip-done">✓ ${done}</span>`:`<span class="cat-chip chip-zero">—</span>`}</td>
+    <td>${pend>0?`<span class="cat-chip chip-pend">${pend}</span>`:`<span class="cat-chip chip-done">All done</span>`}</td>
+    <td>
+      <div class="cat-bar-wrap">
+        <div class="cat-mini-track" style="flex:1;height:8px;background:#e5e7eb;border-radius:4px;overflow:hidden">
+          <div style="height:100%;width:${pct||0}%;background:${color};border-radius:4px;min-width:${pct>0?2:0}px;transition:width .6s ease"></div>
+        </div>
+        <span class="cat-pct" style="color:${color};font-weight:700">${pct}%</span>
+      </div>
+    </td>
+  `;
+  tbody.appendChild(tr);
+});
+
+// ── Timeline lists ──
+function fillList(id, items, color) {
+  const el = document.getElementById(id);
+  items.forEach(sku => {
+    const div = document.createElement('div');
+    div.className = 'tl-item';
+    div.textContent = sku.replace('ENOVAR ','');
+    div.title = sku;
+    div.style.borderLeftColor = color;
+    div.style.borderLeftWidth = '3px';
+    div.style.borderLeftStyle = 'solid';
+    el.appendChild(div);
+  });
+}
+fillList('mayList',  DATA.may_skus,  'var(--may)');
+fillList('juneList', DATA.june_skus, 'var(--purple)');
+fillList('julyList', DATA.july_skus, 'var(--july)');
+
+// ── LB Grid ──
+const lbGrid = document.getElementById('lbGrid');
+DATA.lb_done_list.forEach(item => {
+  const div = document.createElement('div');
+  div.className = 'lb-item';
+  div.textContent = item.replace('ENOVAR ','');
+  div.title = item;
+  lbGrid.appendChild(div);
+});
+</script>
+</body>
+</html>
